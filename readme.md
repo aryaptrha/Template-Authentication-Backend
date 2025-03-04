@@ -16,14 +16,14 @@ This project provides a secure and feature-rich user management system with:
 ## Technical Specifications
 
 - **Java Version**: 17
-- **Spring Boot Version**: 3.4.3
+- **Spring Boot Version**: 3.2.12
 - **Database**: PostgreSQL
 - **Dependencies**:
   - Spring Security
   - JWT Authentication
   - Spring Data JPA
   - Spring Mail
-  - Flyway Migration
+  - Flyway Migration*
   - Thymeleaf
   - Lombok
 
