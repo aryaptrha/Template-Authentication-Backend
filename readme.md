@@ -1,4 +1,4 @@
-# User Registration API
+# Authentication API
 
 A comprehensive Spring Boot API for user registration with email OTP verification and role management.
 
