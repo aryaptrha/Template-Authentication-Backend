@@ -11,15 +11,15 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApiResponse<T> {
+public class ApiResponseDto<T> {
 
     private boolean success;
     private String message;
     private T data;
     private LocalDateTime timestamp;
 
-    public static <T> ApiResponse<T> success(String message, T data) {
-        return ApiResponse.<T>builder()
+    public static <T> ApiResponseDto<T> success(String message, T data) {
+        return ApiResponseDto.<T>builder()
                 .success(true)
                 .message(message)
                 .data(data)
@@ -27,12 +27,12 @@ public class ApiResponse<T> {
                 .build();
     }
 
-    public static <T> ApiResponse<T> success(String message) {
+    public static <T> ApiResponseDto<T> success(String message) {
         return success(message, null);
     }
 
-    public static <T> ApiResponse<T> error(String message) {
-        return ApiResponse.<T>builder()
+    public static <T> ApiResponseDto<T> error(String message) {
+        return ApiResponseDto.<T>builder()
                 .success(false)
                 .message(message)
                 .timestamp(LocalDateTime.now())
