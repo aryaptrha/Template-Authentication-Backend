@@ -32,6 +32,7 @@ public class SecurityConfig {
             "/auth/register",
             "/auth/verify-otp",
             "/auth/login",
+            "/auth/logout",
             "/auth/resend-otp",
             "/auth/forgot-password",
             "/auth/reset-password",

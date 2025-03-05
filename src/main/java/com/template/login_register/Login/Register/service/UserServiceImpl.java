@@ -1,16 +1,15 @@
 package com.template.login_register.Login.Register.service;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.template.login_register.Login.Register.entity.Role;
 import com.template.login_register.Login.Register.entity.User;
 import com.template.login_register.Login.Register.exception.ResourceNotFoundException;
 import com.template.login_register.Login.Register.repository.RoleRepository;
 import com.template.login_register.Login.Register.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -24,6 +23,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CachedUserService cachedUserService;
 
     @Override
     @Transactional
@@ -36,28 +36,21 @@ public class UserServiceImpl implements UserService {
                 .emailVerified(false)
                 .roles(new HashSet<>())
                 .build();
-
-        // Find or create the default user role
+        
+        // Assign default ROLE_USER
         Role userRole = roleRepository.findByName(Role.ROLE_USER)
-                .orElseGet(() -> {
-                    log.warn("Default user role not found, creating it now");
-                    Role newRole = Role.builder()
-                            .name(Role.ROLE_USER)
-                            .description("Regular user with basic privileges")
-                            .build();
-                    return roleRepository.save(newRole);
-                });
-
+                .orElseThrow(() -> new ResourceNotFoundException("Default user role not found"));
+        
         user.getRoles().add(userRole);
-
+        
         log.info("Creating new user with email: {}", email);
-        return userRepository.save(user);
+        return cachedUserService.saveUser(user);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<User> getUserByEmail(String email) {
-        return userRepository.findByEmail(email.toLowerCase());
+        return cachedUserService.getUserByEmail(email.toLowerCase());
     }
 
     @Override
@@ -76,7 +69,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void verifyUserEmail(User user) {
         user.setEmailVerified(true);
-        userRepository.save(user);
+        cachedUserService.saveUser(user);
         log.info("Email verified for user: {}", user.getEmail());
     }
 
@@ -85,18 +78,17 @@ public class UserServiceImpl implements UserService {
     public User assignUserRole(User user, String roleName) {
         Role role = roleRepository.findByName(roleName)
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found: " + roleName));
-
+        
         user.getRoles().add(role);
-        User savedUser = userRepository.save(user);
-
+        User savedUser = cachedUserService.saveUser(user);
+        
         log.info("Role {} assigned to user: {}", roleName, user.getEmail());
         return savedUser;
     }
-
+    
     @Override
     @Transactional
     public User saveUser(User user) {
-        log.info("Saving user: {}", user.getEmail());
-        return userRepository.save(user);
+        return cachedUserService.saveUser(user);
     }
 }
