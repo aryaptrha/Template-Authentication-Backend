@@ -55,13 +55,15 @@ server.port=8080
 server.servlet.context-path=/api
 
 # Database Configuration
-spring.datasource.url=jdbc:postgresql://localhost:5432/user_registration
+spring.datasource.url=jdbc:postgresql://localhost:5432/your_db
 spring.datasource.username=your-username
 spring.datasource.password=your-password
 
 # JWT Configuration
 app.jwt.secret=your-jwt-secret-key-should-be-at-least-256-bits
 app.jwt.expiration=86400000
+app.jwt.header=Authorization
+app.jwt.prefix=Bearer 
 
 # Email Configuration
 spring.mail.host=smtp.gmail.com
@@ -74,6 +76,26 @@ spring.mail.properties.mail.smtp.starttls.enable=true
 # OTP Configuration
 app.otp.validity-minutes=10
 app.otp.length=6
+
+# OTP Configuration
+app.otp.validity-minutes=10
+app.otp.length=6
+
+# Logging
+logging.level.org.springframework.security=DEBUG
+logging.level.com.example.registration=DEBUG
+
+# For SpringDoc
+springdoc.swagger-ui.path=/swagger-ui.html
+springdoc.api-docs.path=/v3/api-docs
+
+# Redis Configuration
+spring.redis.host=localhost
+spring.redis.port=6379
+spring.redis.timeout=2000
+spring.cache.type=redis
+spring.cache.redis.time-to-live=3600000
+spring.cache.redis.cache-null-values=false
 ```
 
 ### Building and Running
