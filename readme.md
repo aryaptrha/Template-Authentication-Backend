@@ -51,7 +51,7 @@ Edit the `application.properties` file:
 
 ```properties
 # Server Configuration
-server.port=8080
+server.port=8085
 server.servlet.context-path=/api
 
 # Database Configuration

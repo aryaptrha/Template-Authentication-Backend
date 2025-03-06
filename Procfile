@@ -1,0 +1,1 @@
+web: java -jar target/login_register-0.0.1-SNAPSHOT.jar

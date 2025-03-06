@@ -52,6 +52,7 @@ public class EmailServiceImpl implements EmailService {
         Map<String, Object> variables = new HashMap<>();
         variables.put("name", name);
         variables.put("otp", otp);
+        variables.put("resetLink", "http://localhost:3000/reset-password");
         
         String emailContent = processTemplate("password-reset-email", variables);
         

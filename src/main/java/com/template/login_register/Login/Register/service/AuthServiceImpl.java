@@ -47,21 +47,39 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public void register(RegisterRequest request) {
         String email = request.getEmail().toLowerCase();
-
-        if (userService.existsByEmail(email)) {
-            throw new BadRequestException("Email is already registered");
+    
+        Optional<User> existingUserOptional = userService.getUserByEmail(email);
+        if (existingUserOptional.isPresent()) {
+            User existingUser = existingUserOptional.get();
+            if (existingUser.isEmailVerified()) {
+                throw new BadRequestException("Email is already registered");
+            } else {
+                // Resend OTP if the email is registered but not verified
+                Otp otp = otpService.generateOtp(email, Otp.OtpType.REGISTRATION);
+                try {
+                    emailService.sendVerificationEmail(
+                            email,
+                            existingUser.getFirstName(),
+                            otp.getCode());
+                } catch (MessagingException e) {
+                    log.error("Failed to resend verification email to {}: {}", email, e.getMessage());
+                    throw new BadRequestException("Failed to resend verification email");
+                }
+                log.info("Resent verification email to: {}", email);
+                return;
+            }
         }
-
+    
         // Create user
         User user = userService.createUser(
                 request.getFirstName(),
                 request.getLastName(),
                 email,
                 request.getPassword());
-
+    
         // Generate and send OTP
         Otp otp = otpService.generateOtp(email, Otp.OtpType.REGISTRATION);
-
+    
         try {
             emailService.sendVerificationEmail(
                     email,
@@ -71,7 +89,7 @@ public class AuthServiceImpl implements AuthService {
             log.error("Failed to send verification email to {}: {}", email, e.getMessage());
             throw new BadRequestException("Failed to send verification email");
         }
-
+    
         log.info("User registered successfully: {}", email);
     }
 
